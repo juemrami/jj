@@ -1423,11 +1423,10 @@ to the current parents may contain changes from multiple commits.
         };
 
         fn xdg_config_home() -> Result<PathBuf, std::env::VarError> {
-            if let Ok(x) = std::env::var("XDG_CONFIG_HOME") {
-                if !x.is_empty() {
+            if let Ok(x) = std::env::var("XDG_CONFIG_HOME")
+                && !x.is_empty() {
                     return Ok(PathBuf::from(x));
                 }
-            }
             std::env::var("HOME").map(|x| Path::new(&x).join(".config"))
         }
 
@@ -1439,11 +1438,10 @@ to the current parents may contain changes from multiple commits.
             }
             git_ignores = git_ignores
                 .chain_with_file("", git_backend.git_repo_path().join("info").join("exclude"))?;
-        } else if let Ok(git_config) = gix::config::File::from_globals() {
-            if let Some(excludes_file_path) = get_excludes_file_path(&git_config) {
+        } else if let Ok(git_config) = gix::config::File::from_globals()
+            && let Some(excludes_file_path) = get_excludes_file_path(&git_config) {
                 git_ignores = git_ignores.chain_with_file("", excludes_file_path)?;
             }
-        }
         Ok(git_ignores)
     }
 
@@ -2014,8 +2012,8 @@ See https://jj-vcs.github.io/jj/latest/working-copy/#stale-working-copy \
         new_commit: &Commit,
         stats: &CheckoutStats,
     ) -> Result<(), CommandError> {
-        if Some(new_commit) != maybe_old_commit {
-            if let Some(mut formatter) = ui.status_formatter() {
+        if Some(new_commit) != maybe_old_commit
+            && let Some(mut formatter) = ui.status_formatter() {
                 let template = self.commit_summary_template();
                 write!(formatter, "Working copy  (@) now at: ")?;
                 template.format(new_commit, formatter.as_mut())?;
@@ -2028,11 +2026,10 @@ See https://jj-vcs.github.io/jj/latest/working-copy/#stale-working-copy \
                     writeln!(formatter)?;
                 }
             }
-        }
         print_checkout_stats(ui, stats, new_commit)?;
-        if Some(new_commit) != maybe_old_commit {
-            if let Some(mut formatter) = ui.status_formatter() {
-                if new_commit.has_conflict()? {
+        if Some(new_commit) != maybe_old_commit
+            && let Some(mut formatter) = ui.status_formatter()
+                && new_commit.has_conflict()? {
                     let conflicts = new_commit.tree()?.conflicts().collect_vec();
                     writeln!(
                         formatter.labeled("warning").with_heading("Warning: "),
@@ -2040,8 +2037,6 @@ See https://jj-vcs.github.io/jj/latest/working-copy/#stale-working-copy \
                     )?;
                     print_conflicted_paths(conflicts, formatter.as_mut(), self)?;
                 }
-            }
-        }
         Ok(())
     }
 
@@ -3408,8 +3403,8 @@ fn resolve_default_command(
         .ignore_errors(true);
     let matches = app_clone.try_get_matches_from(&string_args).ok();
 
-    if let Some(matches) = matches {
-        if matches.subcommand_name().is_none() {
+    if let Some(matches) = matches
+        && matches.subcommand_name().is_none() {
             let args = get_string_or_array(config, "ui.default-command").optional()?;
             if args.is_none() {
                 writeln!(
@@ -3426,7 +3421,6 @@ fn resolve_default_command(
             // Insert the default command directly after the path to the binary.
             string_args.splice(1..1, default_command);
         }
-    }
     Ok(string_args)
 }
 
@@ -3455,8 +3449,8 @@ fn resolve_aliases(
     loop {
         let app_clone = app.clone().allow_external_subcommands(true);
         let matches = app_clone.try_get_matches_from(&string_args).ok();
-        if let Some((command_name, submatches)) = matches.as_ref().and_then(|m| m.subcommand()) {
-            if !real_commands.contains(command_name) {
+        if let Some((command_name, submatches)) = matches.as_ref().and_then(|m| m.subcommand())
+            && !real_commands.contains(command_name) {
                 let alias_name = command_name.to_string();
                 let alias_args = submatches
                     .get_many::<OsString>("")
@@ -3481,7 +3475,6 @@ fn resolve_aliases(
                     return Ok(string_args);
                 }
             }
-        }
         // No more alias commands, or hit unknown option
         return Ok(string_args);
     }
@@ -4030,15 +4023,14 @@ fn map_clap_cli_error(err: clap::Error, ui: &Ui, config: &StackedConfig) -> Comm
     if let (Some(ContextValue::String(arg)), Some(ContextValue::String(value))) = (
         err.get(ContextKind::InvalidArg),
         err.get(ContextKind::InvalidValue),
-    ) {
-        if arg.as_str() == "--template <TEMPLATE>" && value.is_empty() {
+    )
+        && arg.as_str() == "--template <TEMPLATE>" && value.is_empty() {
             // Suppress the error, it's less important than the original error.
             if let Ok(template_aliases) = load_template_aliases(ui, config) {
                 return CommandError::from(err)
                     .hinted(format_template_aliases_hint(&template_aliases));
             }
         }
-    }
     CommandError::from(err)
 }
 

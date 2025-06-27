@@ -141,8 +141,8 @@ pub(crate) fn cmd_duplicate(
 
     let mut tx = workspace_command.start_transaction();
 
-    if let Some((parent_commit_ids, children_commit_ids)) = &location {
-        if !parent_commit_ids.is_empty() {
+    if let Some((parent_commit_ids, children_commit_ids)) = &location
+        && !parent_commit_ids.is_empty() {
             for commit_id in &to_duplicate {
                 for parent_commit_id in parent_commit_ids {
                     if tx.repo().index().is_ancestor(commit_id, parent_commit_id) {
@@ -169,7 +169,6 @@ pub(crate) fn cmd_duplicate(
                 }
             }
         }
-    }
 
     let new_descs = {
         let template = tx

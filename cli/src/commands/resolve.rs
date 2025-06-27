@@ -126,9 +126,9 @@ pub(crate) fn cmd_resolve(
     // Print conflicts that are still present after resolution if the workspace
     // working copy is not at the commit. Otherwise, the conflicting paths will
     // be printed by the `tx.finish()` instead.
-    if workspace_command.get_wc_commit_id() != Some(new_commit.id()) {
-        if let Some(mut formatter) = ui.status_formatter() {
-            if new_commit.has_conflict()? {
+    if workspace_command.get_wc_commit_id() != Some(new_commit.id())
+        && let Some(mut formatter) = ui.status_formatter()
+            && new_commit.has_conflict()? {
                 let new_tree = new_commit.tree()?;
                 let new_conflicts = new_tree.conflicts().collect_vec();
                 writeln!(
@@ -137,8 +137,6 @@ pub(crate) fn cmd_resolve(
                 )?;
                 print_conflicted_paths(new_conflicts, formatter.as_mut(), &workspace_command)?;
             }
-        }
-    }
 
     if let Some(err) = partial_resolution_error {
         return Err(err.into());

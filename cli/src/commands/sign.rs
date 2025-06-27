@@ -112,8 +112,8 @@ pub fn cmd_sign(ui: &mut Ui, command: &CommandHelper, args: &SignArgs) -> Result
         },
     )?;
 
-    if let Some(mut formatter) = ui.status_formatter() {
-        if !signed_commits.is_empty() {
+    if let Some(mut formatter) = ui.status_formatter()
+        && !signed_commits.is_empty() {
             writeln!(formatter, "Signed {} commits:", signed_commits.len())?;
             print_updated_commits(
                 formatter.as_mut(),
@@ -121,7 +121,6 @@ pub fn cmd_sign(ui: &mut Ui, command: &CommandHelper, args: &SignArgs) -> Result
                 &signed_commits,
             )?;
         }
-    }
 
     let num_not_authored_by_me = signed_commits
         .iter()

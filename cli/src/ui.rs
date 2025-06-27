@@ -653,13 +653,12 @@ impl Ui {
         // Parse the default to ensure that the text is valid.
         let default = default.map(|text| (parse(text).expect("default should be valid"), text));
 
-        if !Self::can_prompt() {
-            if let Some((value, text)) = default {
+        if !Self::can_prompt()
+            && let Some((value, text)) = default {
                 // Choose the default automatically without waiting.
                 writeln!(self.stderr(), "{prompt}: {text}")?;
                 return Ok(value);
             }
-        }
 
         loop {
             let input = self.prompt(prompt)?;

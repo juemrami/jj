@@ -2096,11 +2096,9 @@ mod tests {
                 // If a file mode change was applied, update the base mode.
                 if let Some(scm_record::Section::FileMode { is_checked, mode }) =
                     file.sections.first()
-                {
-                    if *is_checked {
+                    && *is_checked {
                         file.file_mode = *mode;
                     }
-                }
 
                 // If the file has been renamed, it's now in its new position.
                 file.old_path = None;

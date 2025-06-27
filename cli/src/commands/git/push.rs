@@ -402,8 +402,8 @@ pub fn cmd_git_push(
     };
     let commits_to_sign =
         validate_commits_ready_to_push(ui, &bookmark_updates, remote, &tx, args, sign_behavior)?;
-    if !args.dry_run && !commits_to_sign.is_empty() {
-        if let Some(sign_behavior) = sign_behavior {
+    if !args.dry_run && !commits_to_sign.is_empty()
+        && let Some(sign_behavior) = sign_behavior {
             let num_updated_signatures = commits_to_sign.len();
             let num_rebased_descendants;
             (num_rebased_descendants, bookmark_updates) = sign_commits_before_push(
@@ -425,7 +425,6 @@ pub fn cmd_git_push(
                 }
             }
         }
-    }
 
     if let Some(mut formatter) = ui.status_formatter() {
         writeln!(
@@ -586,11 +585,10 @@ fn validate_commits_ready_to_push(
             }
             return Err(error);
         }
-        if let Some(sign_settings) = &sign_settings {
-            if !commit.is_signed() && sign_settings.should_sign(commit.store_commit()) {
+        if let Some(sign_settings) = &sign_settings
+            && !commit.is_signed() && sign_settings.should_sign(commit.store_commit()) {
                 commits_to_sign.push(commit);
             }
-        }
     }
     Ok(commits_to_sign)
 }

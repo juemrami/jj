@@ -718,8 +718,8 @@ fn deserialize_extras(commit: &mut Commit, bytes: &[u8]) {
     if !proto.change_id.is_empty() {
         commit.change_id = ChangeId::new(proto.change_id);
     }
-    if let MergedTreeId::Legacy(legacy_tree_id) = &commit.root_tree {
-        if proto.uses_tree_conflict_format {
+    if let MergedTreeId::Legacy(legacy_tree_id) = &commit.root_tree
+        && proto.uses_tree_conflict_format {
             if !proto.root_tree.is_empty() {
                 let merge_builder: MergeBuilder<_> = proto
                     .root_tree
@@ -734,7 +734,6 @@ fn deserialize_extras(commit: &mut Commit, bytes: &[u8]) {
                 commit.root_tree = MergedTreeId::resolved(legacy_tree_id.clone());
             }
         }
-    }
     for predecessor in &proto.predecessors {
         commit.predecessors.push(CommitId::from_bytes(predecessor));
     }
@@ -1290,12 +1289,11 @@ impl Backend for GitBackend {
             }
         }
         let mut extra_headers: Vec<(BString, BString)> = vec![];
-        if let MergedTreeId::Merge(tree_ids) = &contents.root_tree {
-            if !tree_ids.is_resolved() {
+        if let MergedTreeId::Merge(tree_ids) = &contents.root_tree
+            && !tree_ids.is_resolved() {
                 let value = tree_ids.iter().map(|id| id.hex()).join(" ");
                 extra_headers.push((JJ_TREES_COMMIT_HEADER.into(), value.into()));
             }
-        }
         if self.write_change_id_header {
             extra_headers.push((
                 CHANGE_ID_COMMIT_HEADER.into(),

@@ -441,11 +441,10 @@ impl Workspace {
         // the caller expected. It's safe to check out another commit
         // regardless, but it's probably not what  the caller wanted, so we let
         // them know.
-        if let Some(old_tree_id) = old_tree_id {
-            if old_tree_id != locked_ws.locked_wc().old_tree_id() {
+        if let Some(old_tree_id) = old_tree_id
+            && old_tree_id != locked_ws.locked_wc().old_tree_id() {
                 return Err(CheckoutError::ConcurrentCheckout);
             }
-        }
         let stats = locked_ws.locked_wc().check_out(commit, options)?;
         locked_ws
             .finish(operation_id)

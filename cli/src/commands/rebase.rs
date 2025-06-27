@@ -398,8 +398,8 @@ pub(crate) fn cmd_rebase(
         let abandoned_divergent =
             find_duplicate_divergent_commits(tx.repo(), &loc.new_parent_ids, &loc.target)?;
         computed_move.record_to_abandon(abandoned_divergent.iter().map(Commit::id).cloned());
-        if !abandoned_divergent.is_empty() {
-            if let Some(mut formatter) = ui.status_formatter() {
+        if !abandoned_divergent.is_empty()
+            && let Some(mut formatter) = ui.status_formatter() {
                 writeln!(
                     formatter,
                     "Abandoned {} divergent commits that were already present in the destination:",
@@ -411,7 +411,6 @@ pub(crate) fn cmd_rebase(
                     &abandoned_divergent,
                 )?;
             }
-        }
     };
     let stats = computed_move.apply(tx.repo_mut(), &rebase_options)?;
     print_move_commits_stats(ui, &stats)?;

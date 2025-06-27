@@ -1264,11 +1264,10 @@ impl FileSnapshotter<'_> {
         let name = RepoPathComponent::new(&name_string).unwrap();
         let path = dir.join(name);
         let maybe_current_file_state = file_states.get_at(dir, name);
-        if let Some(file_state) = &maybe_current_file_state {
-            if file_state.file_type == FileType::GitSubmodule {
+        if let Some(file_state) = &maybe_current_file_state
+            && file_state.file_type == FileType::GitSubmodule {
                 return Ok(None);
             }
-        }
 
         if file_type.is_dir() {
             let file_states = file_states.prefixed_at(dir, name);
