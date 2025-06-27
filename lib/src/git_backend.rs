@@ -48,7 +48,6 @@ use thiserror::Error;
 use tokio::io::AsyncRead;
 use tokio::io::AsyncReadExt as _;
 
-use crate::backend::make_root_commit;
 use crate::backend::Backend;
 use crate::backend::BackendError;
 use crate::backend::BackendInitError;
@@ -74,6 +73,7 @@ use crate::backend::Timestamp;
 use crate::backend::Tree;
 use crate::backend::TreeId;
 use crate::backend::TreeValue;
+use crate::backend::make_root_commit;
 use crate::config::ConfigGetError;
 use crate::file_util;
 use crate::file_util::BadPathEncoding;
@@ -1860,10 +1860,12 @@ mod tests {
 
         // read_commit() without import_head_commits() works as of now. This might be
         // changed later.
-        assert!(backend
-            .read_commit(&CommitId::from_bytes(git_commit_id.as_bytes()))
-            .block_on()
-            .is_ok());
+        assert!(
+            backend
+                .read_commit(&CommitId::from_bytes(git_commit_id.as_bytes()))
+                .block_on()
+                .is_ok()
+        );
         assert!(
             backend
                 .cached_extra_metadata_table()
@@ -2144,11 +2146,13 @@ mod tests {
             ))
             .unwrap();
         let git_tree = git_repo.find_tree(git_commit.tree_id().unwrap()).unwrap();
-        assert!(git_tree
-            .iter()
-            .map(Result::unwrap)
-            .filter(|entry| entry.filename() != b"README")
-            .all(|entry| entry.mode().value() == 0o040000));
+        assert!(
+            git_tree
+                .iter()
+                .map(Result::unwrap)
+                .filter(|entry| entry.filename() != b"README")
+                .all(|entry| entry.mode().value() == 0o040000)
+        );
         let mut iter = git_tree.iter().map(Result::unwrap);
         let entry = iter.next().unwrap();
         assert_eq!(entry.filename(), b".jjconflict-base-0");
@@ -2281,12 +2285,14 @@ mod tests {
         backend
             .import_head_commits([&commit_id, &commit_id])
             .unwrap();
-        assert!(git_repo
-            .references()
-            .unwrap()
-            .prefixed("refs/jj/keep/")
-            .unwrap()
-            .any(|git_ref| git_ref.unwrap().id().detach() == git_commit_id));
+        assert!(
+            git_repo
+                .references()
+                .unwrap()
+                .prefixed("refs/jj/keep/")
+                .unwrap()
+                .any(|git_ref| git_ref.unwrap().id().detach() == git_commit_id)
+        );
     }
 
     #[test]

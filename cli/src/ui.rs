@@ -306,8 +306,8 @@ struct StreampagerConfig {
 
 impl StreampagerConfig {
     fn streampager_interface_mode(&self) -> streampager::config::InterfaceMode {
-        use streampager::config::InterfaceMode;
         use StreampagerAlternateScreenMode::*;
+        use streampager::config::InterfaceMode;
         match self.interface {
             // InterfaceMode::Direct not implemented
             FullScreenClearOutput => InterfaceMode::FullScreen,
