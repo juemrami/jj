@@ -21,6 +21,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 * The minimum supported Rust Version (MSRV) is now 1.88.0.
 
+* The Jujutsu crates `jj_lib`/`jj_cli` are now compatible with, and compiled
+  under the 2024 Edition of Rust.
+
 ### Deprecations
 
 ### New features
