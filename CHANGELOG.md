@@ -19,6 +19,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   hidden revision and its ancestors](docs/revsets.md#hidden-revisions) as well
   as all visible revisions.
 
+* The minimum supported Rust Version (MSRV) is now 1.88.0.
+
 ### Deprecations
 
 ### New features
